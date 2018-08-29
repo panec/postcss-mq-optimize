@@ -104,6 +104,19 @@ exports["Update mq - min-width x 2, same values"] = function(test){
     test.done();
 };
 
+exports["Update mq - min-height x 2, same values"] = function(test){
+    var input    = "@media (min-height: 200px) and (max-height: 300px) and (min-height: 200px) { .foo {} }";
+    var expected = "@media (min-height: 200px) and (max-height: 300px) { .foo {} }";
+    var optimized = postcss([mqoptimize()]).process(input).css; 
+        
+    test.strictEqual(
+        optimized,
+        expected
+    );
+
+    test.done();
+};
+
 exports["Update mq - min-width x 3, same values"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 300px) and (min-width: 200px) and (min-width: 200px) { .foo {} }";
     var expected = "@media (min-width: 200px) and (max-width: 300px) { .foo {} }";
@@ -122,6 +135,19 @@ exports["Update mq - min-width x 2, different values"] = function(test){
     var expected = "@media (min-width: 300px) and (max-width: 300px) { .foo {} }";
     var optimized = postcss([mqoptimize()]).process(input).css; 
         
+    test.strictEqual(
+        optimized,
+        expected
+    );
+
+    test.done();
+};
+
+
+exports["Update mq - min-width x 2, max-height x 2, different values"] = function(test){
+    var input    = "@media (min-width: 200px) and (max-height: 300px) and (min-width: 300px) and (max-height: 400px) { .foo {} }";
+    var expected = "@media (min-width: 300px) and (max-height: 300px) { .foo {} }";
+
     test.strictEqual(
         optimized,
         expected

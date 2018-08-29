@@ -3,6 +3,8 @@
 var pkg = require("./package.json");
 var postcss = require("postcss");
 
+var MIN_MAX_FEATURES = ['width', 'height'];
+
 var isSourceMapAnnotation = function (rule) {
     if (!rule) {
         return false;
@@ -91,16 +93,22 @@ var optimizeAtRuleParams = function (params) {
         
     return mapAtRuleParams
         .map(function (mqExpressions) {
-            if ( mqExpressions.hasOwnProperty('min-width') ) {
-                mqExpressions['min-width'] = mqExpressions['min-width'].reduce(function (a, b) {
-                    return ( inspectLength(a) > inspectLength(b) ) ? a : b;
-                });
-            }
-            if ( mqExpressions.hasOwnProperty('max-width') ) {
-                mqExpressions['max-width'] = mqExpressions['max-width'].reduce(function (a, b) {
-                    return ( inspectLength(a) < inspectLength(b) ) ? a : b;
-                });
-            }
+            MIN_MAX_FEATURES.forEach(function(prop) {
+                var minProp = 'min-' + prop;
+                var maxProp = 'max-' + prop;
+
+                if ( mqExpressions.hasOwnProperty(minProp) ) {
+                    mqExpressions[minProp] = mqExpressions[minProp].reduce(function (a, b) {
+                        return ( inspectLength(a) > inspectLength(b) ) ? a : b;
+                    });
+                }
+
+                if ( mqExpressions.hasOwnProperty(maxProp) ) {
+                    mqExpressions[maxProp] = mqExpressions[maxProp].reduce(function (a, b) {
+                        return ( inspectLength(a) < inspectLength(b) ) ? a : b;
+                    });
+                }
+            });
             return mqExpressions;
         }).filter(function ( e ) {
             return ( !!e['min-width'] && !!e['max-width'] ? inspectLength(e['min-width']) <= inspectLength(e['max-width']) : true );
