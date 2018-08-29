@@ -121,7 +121,18 @@ var optimizeAtRuleParams = function (params) {
                     special = prop;
                 }
                 else {
-                    array.push( typeof e[prop] === 'string' ? '(' + prop + ': ' + e[prop] + ')' : prop );
+                    switch (typeof e[prop]) {
+                        case 'string':
+                            array.push('(' + prop + ': ' + e[prop] + ')');
+                            break;
+                        case 'object':
+                            // Handle unrecognized properties.
+                            array.push('(' + prop + ': ' + e[prop][0] + ')');
+                            break;
+                        default:
+                            // Handle specials
+                            array.push(prop);
+                    }
                 }
             }
             return ( !!special ? special + ' ' : '' ) + array.join(' and ');
