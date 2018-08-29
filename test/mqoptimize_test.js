@@ -14,8 +14,8 @@ var mqoptimize = require("../index");
 exports["Skip mq - and"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 300px) { .foo {} }";
     var expected = "@media (min-width: 200px) and (max-width: 300px) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -27,8 +27,8 @@ exports["Skip mq - and"] = function(test){
 exports["Skip mq - only"] = function(test){
     var input    = "@media only screen and (min-width: 200px) and (max-width: 300px) { .foo {} }";
     var expected = "@media only screen and (min-width: 200px) and (max-width: 300px) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-    
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.equal(
         optimized,
         expected
@@ -40,8 +40,8 @@ exports["Skip mq - only"] = function(test){
 exports["Skip mq - not"] = function(test){
     var input    = "@media not screen and (min-width: 200px) and (max-width: 300px) { .foo {} }";
     var expected = "@media not screen and (min-width: 200px) and (max-width: 300px) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -53,8 +53,8 @@ exports["Skip mq - not"] = function(test){
 exports["Skip mq - comma-seperated list & and"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 300px), (max-width: 200px) { .foo {} }";
     var expected = "@media (min-width: 200px) and (max-width: 300px), (max-width: 200px) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -66,8 +66,8 @@ exports["Skip mq - comma-seperated list & and"] = function(test){
 exports["Skip mq - comma-seperated list & only"] = function(test){
     var input    = "@media only screen and (min-width: 200px) and (max-width: 300px), (max-width: 200px) { .foo {} }";
     var expected = "@media only screen and (min-width: 200px) and (max-width: 300px), (max-width: 200px) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -79,8 +79,8 @@ exports["Skip mq - comma-seperated list & only"] = function(test){
 exports["Skip mq - comma-seperated list & not"] = function(test){
     var input    = "@media not screen and (min-width: 200px) and (max-width: 300px), (max-width: 200px) { .foo {} }";
     var expected = "@media not screen and (min-width: 200px) and (max-width: 300px), (max-width: 200px) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -94,8 +94,8 @@ exports["Skip mq - comma-seperated list & not"] = function(test){
 exports["Update mq - min-width x 2, same values"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 300px) and (min-width: 200px) { .foo {} }";
     var expected = "@media (min-width: 200px) and (max-width: 300px) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -107,8 +107,8 @@ exports["Update mq - min-width x 2, same values"] = function(test){
 exports["Update mq - min-height x 2, same values"] = function(test){
     var input    = "@media (min-height: 200px) and (max-height: 300px) and (min-height: 200px) { .foo {} }";
     var expected = "@media (min-height: 200px) and (max-height: 300px) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -120,8 +120,8 @@ exports["Update mq - min-height x 2, same values"] = function(test){
 exports["Update mq - min-width x 3, same values"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 300px) and (min-width: 200px) and (min-width: 200px) { .foo {} }";
     var expected = "@media (min-width: 200px) and (max-width: 300px) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -133,8 +133,8 @@ exports["Update mq - min-width x 3, same values"] = function(test){
 exports["Update mq - min-width x 2, different values"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 300px) and (min-width: 300px) { .foo {} }";
     var expected = "@media (min-width: 300px) and (max-width: 300px) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -147,6 +147,7 @@ exports["Update mq - min-width x 2, different values"] = function(test){
 exports["Update mq - min-width x 2, max-height x 2, different values"] = function(test){
     var input    = "@media (min-width: 200px) and (max-height: 300px) and (min-width: 300px) and (max-height: 400px) { .foo {} }";
     var expected = "@media (min-width: 300px) and (max-height: 300px) { .foo {} }";
+    var optimized = postcss([mqoptimize()]).process(input).css;
 
     test.strictEqual(
         optimized,
@@ -159,8 +160,8 @@ exports["Update mq - min-width x 2, max-height x 2, different values"] = functio
 exports["Update mq - leave unknown features intact"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 300px) and (dummy: dummyvalue) { .foo {} }";
     var expected = "@media (min-width: 200px) and (max-width: 300px) and (dummy: dummyvalue) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -172,8 +173,8 @@ exports["Update mq - leave unknown features intact"] = function(test){
 exports["Update mq - min-width x 2, different values, comma-seperated list"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 300px) and (min-width: 300px), (min-width: 200px) { .foo {} }";
     var expected = "@media (min-width: 300px) and (max-width: 300px), (min-width: 200px) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -185,8 +186,8 @@ exports["Update mq - min-width x 2, different values, comma-seperated list"] = f
 exports["Update mq - min-width > max-width, comma-seperated list"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 100px), (min-width: 200px) { .foo {} }";
     var expected = "@media (min-width: 200px) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -198,8 +199,8 @@ exports["Update mq - min-width > max-width, comma-seperated list"] = function(te
 exports["Update mq - min-width x 2, min-widht == max-width"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 300px) and (min-width: 300px) { .foo {} }";
     var expected = "@media (min-width: 300px) and (max-width: 300px) { .foo {} }";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -213,8 +214,8 @@ exports["Update mq - min-width x 2, min-widht == max-width"] = function(test){
 exports["Remove mq - min-width > max-width"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 100px) { .foo {} }";
     var expected = "";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected
@@ -226,8 +227,8 @@ exports["Remove mq - min-width > max-width"] = function(test){
 exports["Remove mq - max-width x 2, min-width > max-width"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 300px) and (max-width: 100px) { .foo {} }";
     var expected = "";
-    var optimized = postcss([mqoptimize()]).process(input).css; 
-        
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
     test.strictEqual(
         optimized,
         expected

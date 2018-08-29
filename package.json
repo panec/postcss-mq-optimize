@@ -9,13 +9,13 @@
     "media-queries"
   ],
   "author": {
-    "name" : "Maciej Panecki",
-    "email" : "maciej.panecki@gmail.com"
+    "name": "Maciej Panecki",
+    "email": "maciej.panecki@gmail.com"
   },
   "contributors": {
-    "name" : "Kyo Nagashima",
-    "email" : "hail2u@gmail.com",
-    "url" : "https://github.com/hail2u/node-css-mqpacker"  
+    "name": "Kyo Nagashima",
+    "email": "hail2u@gmail.com",
+    "url": "https://github.com/hail2u/node-css-mqpacker"
   },
   "license": "MIT",
   "repository": "panec/postcss-mq-optimize",
