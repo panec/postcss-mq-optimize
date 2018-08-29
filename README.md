@@ -1,5 +1,7 @@
 # PostCSS Mq Optimize [![Build Status][ci-img]][ci]
 
+[![Build Status](https://travis-ci.org/panec/postcss-mq-optimize.svg?branch=master)](https://travis-ci.org/panec/postcss-mq-optimize)
+
 [PostCSS] plugin Removes invalid media queries or its expressions.
 
 [PostCSS]: https://github.com/postcss/postcss
