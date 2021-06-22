@@ -89,6 +89,19 @@ exports["Skip mq - comma-seperated list & not"] = function(test){
     test.done();
 };
 
+exports["Skip mq - max-width & orientation"] = function(test){
+    var input    = "@media (max-width: 1024px) and (orientation: landscape) { .foo {} }";
+    var expected = "@media (max-width: 1024px) and (orientation: landscape) { .foo {} }";
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
+    test.strictEqual(
+        optimized,
+        expected
+    );
+
+    test.done();
+};
+
 // Tests for update media queries
 
 exports["Update mq - min-width x 2, same values"] = function(test){
@@ -196,9 +209,22 @@ exports["Update mq - min-width > max-width, comma-seperated list"] = function(te
     test.done();
 };
 
-exports["Update mq - min-width x 2, min-widht == max-width"] = function(test){
+exports["Update mq - min-width x 2, min-width == max-width"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 300px) and (min-width: 300px) { .foo {} }";
     var expected = "@media (min-width: 300px) and (max-width: 300px) { .foo {} }";
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
+    test.strictEqual(
+        optimized,
+        expected
+    );
+
+    test.done();
+};
+
+exports["Update mq - min-width, max-width, min-width"] = function(test){
+    var input    = "@media (min-width: 200px) and (max-width: 300px) and (min-width: 100px) { .foo {} }";
+    var expected = "@media (min-width: 200px) and (max-width: 300px) { .foo {} }";
     var optimized = postcss([mqoptimize()]).process(input).css;
 
     test.strictEqual(
@@ -236,4 +262,3 @@ exports["Remove mq - max-width x 2, min-width > max-width"] = function(test){
 
     test.done();
 };
-
