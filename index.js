@@ -24,6 +24,7 @@ var isSourceMapAnnotation = function (rule) {
 var parseQueryList = function (queryList) {
     var queries = [];
     postcss.list.comma(queryList).forEach(function (query) {
+        query = query.replace("and", " and ");
         var expressions = {};
         postcss.list.space(query).forEach(function (expression) {
             var feature;
@@ -90,7 +91,7 @@ var inspectLength = function (length) {
 var optimizeAtRuleParams = function (params) {
 
     var mapAtRuleParams = parseQueryList(params);
-        
+
     return mapAtRuleParams
         .map(function (mqExpressions) {
             MIN_MAX_FEATURES.forEach(function(prop) {
@@ -115,7 +116,7 @@ var optimizeAtRuleParams = function (params) {
         }).map( function( e ) {
             var array = [];
             var special = undefined; // enum special { not, only }
-            
+
             for (var prop in e) {
                 if ( prop === 'not' || prop === 'only' ) {
                     special = prop;
@@ -150,7 +151,7 @@ module.exports = postcss.plugin(pkg.name, function (opts) {
 
         css.walkAtRules("media", function (atRule) {
             atRule.params = optimizeAtRuleParams(atRule.params);
-            
+
             if ( atRule.params == "" ) {
                 atRule.remove();
             }

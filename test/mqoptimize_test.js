@@ -89,9 +89,51 @@ exports["Skip mq - comma-seperated list & not"] = function(test){
     test.done();
 };
 
+
+exports["Skip mq - min-width & max-width"] = function(test){
+    var input    = "@media (min-width: 200px) and (max-width: 1024px) { .foo {} }";
+    var expected = "@media (min-width: 200px) and (max-width: 1024px) { .foo {} }";
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
+    test.strictEqual(
+        optimized,
+        expected
+    );
+
+    test.done();
+};
+
 exports["Skip mq - max-width & orientation"] = function(test){
     var input    = "@media (max-width: 1024px) and (orientation: landscape) { .foo {} }";
     var expected = "@media (max-width: 1024px) and (orientation: landscape) { .foo {} }";
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
+    test.strictEqual(
+        optimized,
+        expected
+    );
+
+    test.done();
+};
+
+exports["Skip mq - min-width, max-width & orientation"] = function(test){
+    var input    = "@media (min-width: 200px) and (max-width: 1024px) and (orientation: landscape) { .foo {} }";
+    var expected = "@media (min-width: 200px) and (max-width: 1024px) and (orientation: landscape) { .foo {} }";
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
+    test.strictEqual(
+        optimized,
+        expected
+    );
+
+    test.done();
+};
+
+// Tests for fix media queries
+
+exports["Skip mq - min-width, max-width & no spaces"] = function(test){
+    var input    = "@media (min-width: 200px)and(max-width: 1024px){ .foo {} }";
+    var expected = "@media (min-width: 200px) and (max-width: 1024px){ .foo {} }";
     var optimized = postcss([mqoptimize()]).process(input).css;
 
     test.strictEqual(
