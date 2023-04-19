@@ -1,6 +1,6 @@
 {
   "name": "postcss-mq-optimize",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "PostCSS plugin Removes invalid media queries or its expresions",
   "keywords": [
     "postcss",
