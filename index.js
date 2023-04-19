@@ -1,34 +1,20 @@
 "use strict";
 
-var pkg = require("./package.json");
-var postcss = require("postcss");
+const pkg = require("./package.json");
 
-var MIN_MAX_FEATURES = ['width', 'height'];
+const MIN_MAX_FEATURES = ["width", "height"];
 
-var isSourceMapAnnotation = function (rule) {
-    if (!rule) {
-        return false;
-    }
+const parseQueryList = function (queryList, list) {
+    const queries = [];
 
-    if (rule.type !== "comment") {
-        return false;
-    }
-
-    if (rule.text.toLowerCase().indexOf("# sourcemappingurl=") !== 0) {
-        return false;
-    }
-
-    return true;
-};
-
-var parseQueryList = function (queryList) {
-    var queries = [];
-    postcss.list.comma(queryList).forEach(function (query) {
+    list.comma(queryList).forEach(function (query) {
         query = query.replace("and", " and ");
-        var expressions = {};
-        postcss.list.space(query).forEach(function (expression) {
-            var feature;
-            var value;
+        const expressions = {};
+
+        list.space(query).forEach(function (expression) {
+            let feature;
+            let value;
+
             expression = expression.toLowerCase();
 
             if (expression === "and") {
@@ -41,7 +27,11 @@ var parseQueryList = function (queryList) {
                 return;
             }
 
-            expression = postcss.list.split(expression.replace(/^\(|\)$/g, ""), [":"]);
+            expression = list.split(
+                expression.replace(/^\(|\)$/g, ""),
+                [":"]
+            );
+
             feature = expression[0];
             value = expression[1];
 
@@ -57,9 +47,10 @@ var parseQueryList = function (queryList) {
     return queries;
 };
 
-var inspectLength = function (length) {
-    var num;
-    var unit;
+const inspectLength = function (length) {
+    let num;
+    let unit;
+
     length = /(-?\d*\.?\d+)(ch|em|ex|px|rem)/.exec(length);
 
     if (!length) {
@@ -88,47 +79,54 @@ var inspectLength = function (length) {
     return num;
 };
 
-var optimizeAtRuleParams = function (params) {
-
-    var mapAtRuleParams = parseQueryList(params);
+const optimizeAtRuleParams = function (params, list) {
+    const mapAtRuleParams = parseQueryList(params, list);
 
     return mapAtRuleParams
         .map(function (mqExpressions) {
-            MIN_MAX_FEATURES.forEach(function(prop) {
-                var minProp = 'min-' + prop;
-                var maxProp = 'max-' + prop;
+            MIN_MAX_FEATURES.forEach(function (prop) {
+                const minProp = "min-" + prop;
+                const maxProp = "max-" + prop;
 
-                if ( mqExpressions.hasOwnProperty(minProp) ) {
-                    mqExpressions[minProp] = mqExpressions[minProp].reduce(function (a, b) {
-                        return ( inspectLength(a) > inspectLength(b) ) ? a : b;
-                    });
+                if (mqExpressions.hasOwnProperty(minProp)) {
+                    mqExpressions[minProp] = mqExpressions[minProp].reduce(
+                        function (a, b) {
+                            return inspectLength(a) > inspectLength(b) ? a : b;
+                        }
+                    );
                 }
 
-                if ( mqExpressions.hasOwnProperty(maxProp) ) {
-                    mqExpressions[maxProp] = mqExpressions[maxProp].reduce(function (a, b) {
-                        return ( inspectLength(a) < inspectLength(b) ) ? a : b;
-                    });
+                if (mqExpressions.hasOwnProperty(maxProp)) {
+                    mqExpressions[maxProp] = mqExpressions[maxProp].reduce(
+                        function (a, b) {
+                            return inspectLength(a) < inspectLength(b) ? a : b;
+                        }
+                    );
                 }
             });
             return mqExpressions;
-        }).filter(function ( e ) {
-            return ( !!e['min-width'] && !!e['max-width'] ? inspectLength(e['min-width']) <= inspectLength(e['max-width']) : true );
-        }).map( function( e ) {
-            var array = [];
-            var special = undefined; // enum special { not, only }
+        })
+        .filter(function (e) {
+            return !!e["min-width"] && !!e["max-width"]
+                ? inspectLength(e["min-width"]) <= inspectLength(e["max-width"])
+                : true;
+        })
+        .map(function (e) {
+            const array = [];
 
-            for (var prop in e) {
-                if ( prop === 'not' || prop === 'only' ) {
+            let special = undefined; // enum special { not, only }
+
+            for (let prop in e) {
+                if (prop === "not" || prop === "only") {
                     special = prop;
-                }
-                else {
+                } else {
                     switch (typeof e[prop]) {
-                        case 'string':
-                            array.push('(' + prop + ': ' + e[prop] + ')');
+                        case "string":
+                            array.push("(" + prop + ": " + e[prop] + ")");
                             break;
-                        case 'object':
+                        case "object":
                             // Handle unrecognized properties.
-                            array.push('(' + prop + ': ' + e[prop][0] + ')');
+                            array.push("(" + prop + ": " + e[prop][0] + ")");
                             break;
                         default:
                             // Handle specials
@@ -136,31 +134,25 @@ var optimizeAtRuleParams = function (params) {
                     }
                 }
             }
-            return ( !!special ? special + ' ' : '' ) + array.join(' and ');
+            return (!!special ? special + " " : "") + array.join(" and ");
         })
-        .join(', ');
-}
+        .join(", ");
+};
 
-module.exports = postcss.plugin(pkg.name, function (opts) {
-    opts = opts || {};
-
-    return function (css, result) { var sourceMap = css.last;
-        if (!isSourceMapAnnotation(sourceMap)) {
-            sourceMap = null;
-        }
-
-        css.walkAtRules("media", function (atRule) {
-            atRule.params = optimizeAtRuleParams(atRule.params);
-
-            if ( atRule.params == "" ) {
-                atRule.remove();
+const plugin = (opts = {}) => {
+    return {
+        postcssPlugin: pkg.name,
+        AtRule(atRule, { list }) {
+            if (atRule.name === "media") {
+                atRule.params = optimizeAtRuleParams(atRule.params, list);
+                if (atRule.params == "") {
+                    atRule.remove();
+                }
             }
-        });
-
-        if (sourceMap) {
-            sourceMap.moveTo(css);
-        }
-
-        return css;
+        },
     };
-});
+};
+
+plugin.postcss = true;
+
+module.exports = plugin;
