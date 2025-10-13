@@ -242,9 +242,9 @@ exports["Skip mq - width >=, width <= & orientation"] = function(test){
     test.done();
 };
 
-// Tests for fix media queries
+// Tests for fix media queries syntax
 
-exports["Skip mq - min-width, max-width & no spaces"] = function(test){
+exports["Syntax mq - min-width, max-width & no spaces"] = function(test){
     var input    = "@media (min-width: 200px)and(max-width: 1024px){ .foo {} }";
     var expected = "@media (min-width: 200px) and (max-width: 1024px){ .foo {} }";
     var optimized = postcss([mqoptimize()]).process(input).css;
@@ -257,7 +257,7 @@ exports["Skip mq - min-width, max-width & no spaces"] = function(test){
     test.done();
 };
 
-exports["Skip mq - width >=, width <= & no spaces"] = function(test){
+exports["Syntax mq - width >=, width <= & no spaces"] = function(test){
     var input    = "@media (width >= 200px)and(width <= 1024px){ .foo {} }";
     var expected = "@media (width >= 200px) and (width <= 1024px){ .foo {} }";
     var optimized = postcss([mqoptimize()]).process(input).css;
@@ -311,9 +311,9 @@ exports["Update mq - min-height x 2, same values"] = function(test){
     test.done();
 };
 
-exports["Update mq - height > x 2, same values"] = function(test){
-    var input    = "@media (height > 200px) and (height < 300px) and (height > 200px) { .foo {} }";
-    var expected = "@media (height > 200px) and (height < 300px) { .foo {} }";
+exports["Update mq - height >= x 2, same values"] = function(test){
+    var input    = "@media (height >= 200px) and (height <= 300px) and (height >= 200px) { .foo {} }";
+    var expected = "@media (height >= 200px) and (height <= 300px) { .foo {} }";
     var optimized = postcss([mqoptimize()]).process(input).css;
 
     test.strictEqual(
@@ -352,6 +352,7 @@ exports["Update mq - width >= x 3, same values"] = function(test){
 
 exports["Update mq - min-width x 2, different values"] = function(test){
     var input    = "@media (min-width: 200px) and (max-width: 300px) and (min-width: 300px) { .foo {} }";
+    var expected = "@media (min-width: 300px) and (max-width: 300px) { .foo {} }";
     var optimized = postcss([mqoptimize()]).process(input).css;
 
     test.strictEqual(
@@ -364,6 +365,7 @@ exports["Update mq - min-width x 2, different values"] = function(test){
 
 exports["Update mq - width >= x 2, different values"] = function(test){
     var input    = "@media (width >= 200px) and (width <= 300px) and (width >= 300px) { .foo {} }";
+    var expected = "@media (width >= 300px) and (width <= 300px) { .foo {} }";
     var optimized = postcss([mqoptimize()]).process(input).css;
 
     test.strictEqual(
@@ -388,9 +390,9 @@ exports["Update mq - min-width x 2, max-height x 2, different values"] = functio
     test.done();
 };
 
-exports["Update mq - width >= x 2, height < x 2, different values"] = function(test){
-    var input    = "@media (width >= 200px) and (height < 300px) and (width >= 300px) and (height < 400px) { .foo {} }";
-    var expected = "@media (width >= 300px) and (height < 300px) { .foo {} }";
+exports["Update mq - width >= x 2, height <= x 2, different values"] = function(test){
+    var input    = "@media (width >= 200px) and (height <= 300px) and (width >= 300px) and (height <= 400px) { .foo {} }";
+    var expected = "@media (width >= 300px) and (height <= 300px) { .foo {} }";
     var optimized = postcss([mqoptimize()]).process(input).css;
 
     test.strictEqual(
@@ -494,6 +496,7 @@ exports["Update mq - min-width x 2, min-width == max-width"] = function(test){
 
 exports["Update mq - width >= x 2, width >= == width <="] = function(test){
     var input    = "@media (width >= 200px) and (width <= 300px) and (width >= 300px) { .foo {} }";
+    var expected = "@media (width >= 300px) and (width <= 300px) { .foo {} }";
     var optimized = postcss([mqoptimize()]).process(input).css;
 
     test.strictEqual(
