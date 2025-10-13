@@ -18,7 +18,10 @@
     "url": "https://github.com/hail2u/node-css-mqpacker"
   },
   "license": "MIT",
-  "repository": "panec/postcss-mq-optimize",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/panec/postcss-mq-optimize.git"
+  },
   "bugs": {
     "url": "https://github.com/panec/postcss-mq-optimize/issues"
   },
