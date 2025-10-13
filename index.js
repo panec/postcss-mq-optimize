@@ -1,7 +1,7 @@
 "use strict";
 
 const pkg = require("./package.json");
-const MIN_MAX_FEATURES = ["width", "height"];
+const SIZE_FEATURES = ["width", "height"];
 
 const inspectLength = function (length) {
     let num;
@@ -58,13 +58,21 @@ const parseQueryList = function (queryList, list) {
                 return;
             }
 
-            expression = list.split(
-                expression.replace(/^\(|\)$/g, ""),
-                [":"]
-            );
+            // Remove surrounding parentheses
+            const cleanedExpression = expression.replace(/^\(|\)$/g, "");
 
-            feature = expression[0];
-            value = expression[1];
+            // Check for range syntax first (>=, <=, >, <)
+            const rangeMatch = cleanedExpression.match(/^(\w+)\s*(>=|<=|>|<)\s*(.+)$/);
+            if (rangeMatch) {
+                const [, property, operator, val] = rangeMatch;
+
+                feature = `${property} ${operator}`;
+                value = val.trim();
+            } else {
+                expression = list.split(cleanedExpression, [":"]);
+                feature = expression[0];
+                value = expression[1];
+            }
 
             if (!expressions[feature]) {
                 expressions[feature] = [];
@@ -84,10 +92,15 @@ const optimizeAtRuleParams = function (params, list) {
 
     return mapAtRuleParams
         .map(function (mqExpressions) {
-            MIN_MAX_FEATURES.forEach(function (prop) {
+            SIZE_FEATURES.forEach(function (prop) {
                 const minProp = "min-" + prop;
                 const maxProp = "max-" + prop;
+                const rangeMinProp = prop + " >=";
+                const rangeMaxProp = prop + " <=";
+                const rangeMinStrictProp = prop + " >";
+                const rangeMaxStrictProp = prop + " <";
 
+                // Handle range syntax min-* properties
                 if (mqExpressions.hasOwnProperty(minProp)) {
                     mqExpressions[minProp] = mqExpressions[minProp].reduce(
                         function (a, b) {
@@ -96,8 +109,45 @@ const optimizeAtRuleParams = function (params, list) {
                     );
                 }
 
+                // Handle range syntax max-* properties
                 if (mqExpressions.hasOwnProperty(maxProp)) {
                     mqExpressions[maxProp] = mqExpressions[maxProp].reduce(
+                        function (a, b) {
+                            return inspectLength(a) < inspectLength(b) ? a : b;
+                        }
+                    );
+                }
+
+                // Handle range syntax >= properties
+                if (mqExpressions.hasOwnProperty(rangeMinProp)) {
+                    mqExpressions[rangeMinProp] = mqExpressions[rangeMinProp].reduce(
+                        function (a, b) {
+                            return inspectLength(a) > inspectLength(b) ? a : b;
+                        }
+                    );
+                }
+
+                // Handle range syntax <= properties
+                if (mqExpressions.hasOwnProperty(rangeMaxProp)) {
+                    mqExpressions[rangeMaxProp] = mqExpressions[rangeMaxProp].reduce(
+                        function (a, b) {
+                            return inspectLength(a) < inspectLength(b) ? a : b;
+                        }
+                    );
+                }
+
+                // Handle range syntax > properties
+                if (mqExpressions.hasOwnProperty(rangeMinStrictProp)) {
+                    mqExpressions[rangeMinStrictProp] = mqExpressions[rangeMinStrictProp].reduce(
+                        function (a, b) {
+                            return inspectLength(a) > inspectLength(b) ? a : b;
+                        }
+                    );
+                }
+
+                // Handle range syntax < properties
+                if (mqExpressions.hasOwnProperty(rangeMaxStrictProp)) {
+                    mqExpressions[rangeMaxStrictProp] = mqExpressions[rangeMaxStrictProp].reduce(
                         function (a, b) {
                             return inspectLength(a) < inspectLength(b) ? a : b;
                         }
@@ -107,9 +157,37 @@ const optimizeAtRuleParams = function (params, list) {
             return mqExpressions;
         })
         .filter(function (e) {
-            return !!e["min-width"] && !!e["max-width"]
-                ? inspectLength(e["min-width"]) <= inspectLength(e["max-width"])
-                : true;
+            if (!!e["min-width"] && !!e["max-width"]) {
+                if (inspectLength(e["min-width"]) > inspectLength(e["max-width"])) {
+                    return false;
+                }
+            }
+
+            if (!!e["width >="] && !!e["width <="]) {
+                if (inspectLength(e["width >="]) > inspectLength(e["width <="])) {
+                    return false;
+                }
+            }
+
+            if (!!e["width >"] && !!e["width <"]) {
+                if (inspectLength(e["width >"]) >= inspectLength(e["width <"])) {
+                    return false;
+                }
+            }
+
+            if (!!e["height >="] && !!e["height <="]) {
+                if (inspectLength(e["height >="]) > inspectLength(e["height <="])) {
+                    return false;
+                }
+            }
+
+            if (!!e["height >"] && !!e["height <"]) {
+                if (inspectLength(e["height >"]) >= inspectLength(e["height <"])) {
+                    return false;
+                }
+            }
+
+            return true;
         })
         .map(function (e) {
             const array = [];
@@ -122,7 +200,12 @@ const optimizeAtRuleParams = function (params, list) {
                 } else {
                     switch (typeof e[prop]) {
                         case "string":
-                            array.push("(" + prop + ": " + e[prop] + ")");
+                            if (prop.includes(" >=") || prop.includes(" <=") ||
+                                prop.includes(" >") || prop.includes(" <")) {
+                                array.push("(" + prop + " " + e[prop] + ")");
+                            } else {
+                                array.push("(" + prop + ": " + e[prop] + ")");
+                            }
                             break;
                         case "object":
                             // Handle unrecognized properties.
