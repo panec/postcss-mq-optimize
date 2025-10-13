@@ -1,8 +1,39 @@
 "use strict";
 
 const pkg = require("./package.json");
-
 const MIN_MAX_FEATURES = ["width", "height"];
+
+const inspectLength = function (length) {
+    let num;
+    let unit;
+
+    length = /(-?\d*\.?\d+)(ch|em|ex|px|rem)/.exec(length);
+
+    if (!length) {
+        return Number.NaN;
+    }
+
+    num = length[1];
+    unit = length[2];
+
+    switch (unit) {
+        case "ch":
+            num = parseFloat(num) * 8.8984375;
+            break;
+        case "em":
+        case "rem":
+            num = parseFloat(num) * 16;
+            break;
+        case "ex":
+            num = parseFloat(num) * 8.296875;
+            break;
+        case "px":
+            num = parseFloat(num);
+            break;
+    }
+
+    return num;
+};
 
 const parseQueryList = function (queryList, list) {
     const queries = [];
@@ -47,37 +78,6 @@ const parseQueryList = function (queryList, list) {
     return queries;
 };
 
-const inspectLength = function (length) {
-    let num;
-    let unit;
-
-    length = /(-?\d*\.?\d+)(ch|em|ex|px|rem)/.exec(length);
-
-    if (!length) {
-        return Number.NaN;
-    }
-
-    num = length[1];
-    unit = length[2];
-
-    switch (unit) {
-        case "ch":
-            num = parseFloat(num) * 8.8984375;
-            break;
-        case "em":
-        case "rem":
-            num = parseFloat(num) * 16;
-            break;
-        case "ex":
-            num = parseFloat(num) * 8.296875;
-            break;
-        case "px":
-            num = parseFloat(num);
-            break;
-    }
-
-    return num;
-};
 
 const optimizeAtRuleParams = function (params, list) {
     const mapAtRuleParams = parseQueryList(params, list);
