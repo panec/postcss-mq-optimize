@@ -12,11 +12,13 @@
     "name": "Maciej Panecki",
     "email": "maciej.panecki@gmail.com"
   },
-  "contributors": {
-    "name": "Kyo Nagashima",
-    "email": "hail2u@gmail.com",
-    "url": "https://github.com/hail2u/node-css-mqpacker"
-  },
+  "contributors": [
+    {
+      "name": "Kyo Nagashima",
+      "email": "hail2u@gmail.com",
+      "url": "https://github.com/hail2u/node-css-mqpacker"
+    }
+  ],
   "engines": {
     "node": "22.21.0",
     "npm": "10.9.4"
@@ -31,14 +33,13 @@
   },
   "homepage": "https://github.com/panec/postcss-mq-optimize",
   "devDependencies": {
-    "clean-publish": "^4.2.0",
-    "nodeunit": "^0.9.0",
-    "postcss": "^8.0.0"
+    "clean-publish": "^6.0.0",
+    "postcss": "^8.5.8"
   },
   "peerDependencies": {
-    "postcss": "^8.0.0"
+    "postcss": "^8.5.8"
   },
   "scripts": {
-    "test": "nodeunit test --reporter default"
+    "test": "node --test"
   }
 }
