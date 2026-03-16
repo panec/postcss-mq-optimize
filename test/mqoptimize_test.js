@@ -586,3 +586,18 @@ exports["Remove mq - width <= x 2, width >= greater than width <="] = function(t
 
     test.done();
 };
+
+// Tests for fixing normalizing and in media queries
+
+exports["Normalize spaces around and in media queries"] = function(test){
+    var input    = "@media not screen and(min-width: 200px)and (max-width: 300px) { .foo {} }";
+    var expected = "@media not screen and (min-width: 200px) and (max-width: 300px) { .foo {} }";
+    var optimized = postcss([mqoptimize()]).process(input).css;
+
+    test.strictEqual(
+        optimized,
+        expected
+    );
+
+    test.done();
+};

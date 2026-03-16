@@ -39,7 +39,10 @@ const parseQueryList = function (queryList, list) {
     const queries = [];
 
     list.comma(queryList).forEach(function (query) {
-        query = query.replace("and", " and ");
+        query = query
+            .replace(/\)\s*and\s*\(/gi, ") and (")
+            .replace(/\)\s*and\b/gi, ") and")
+            .replace(/\band\s*\(/gi, "and (");
         const expressions = {};
 
         list.space(query).forEach(function (expression) {
