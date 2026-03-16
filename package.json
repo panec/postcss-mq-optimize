@@ -17,6 +17,10 @@
     "email": "hail2u@gmail.com",
     "url": "https://github.com/hail2u/node-css-mqpacker"
   },
+  "engines": {
+    "node": "22.21.0",
+    "npm": "10.9.4"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
